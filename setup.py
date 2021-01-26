@@ -6,7 +6,7 @@ with open('README.md') as f:
 
 setup(
     name='assignmenttest',
-    version='0.0.1',
+    version='0.0.2',
     license='MIT',
     url='https://github.com/DigiKlausur/assignmenttest',
     description='Create test cases for Python assignments',
@@ -16,10 +16,8 @@ setup(
     author_email='tim.metzler@h-brs.de',
     packages=find_packages(exclude=('tests', 'docs')),
     install_requires=[
-        "numpy",
+        "rapidfuzz",
     ],
     include_package_data = True,
     zip_safe=False,
-    test_suite='tests',
-    tests_require=['pytest-cov']
 )
