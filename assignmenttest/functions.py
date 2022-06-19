@@ -1,5 +1,8 @@
 import ast
 import inspect
+import random
+from typing import Optional, List, Callable
+
 from .comparators import compare_numbers
 from .utils import HiddenPrints
 from .base import BaseTest
@@ -39,10 +42,12 @@ class FunctionTest(BaseTest):
         elif "kwargs" in test_case:
             return function(**test_case["kwargs"])
 
-    def run_single_test_case(self, test_case, r_tol=0, a_tol=0):
+    def run_single_test_case(self, test_case, seeding: Optional[List[Callable]] = None):
         if "target" in test_case:
             target = test_case["target"]
         else:
+            for s in seeding:
+                s(0)
             target = self.call_function(self.reference_function, test_case)
 
         max_reruns = 1
@@ -51,6 +56,8 @@ class FunctionTest(BaseTest):
         try:
             with HiddenPrints():
                 for _ in range(max_reruns):
+                    for s in seeding:
+                        s(0)
                     result = self.call_function(
                         self.namespace[self.fun_name], test_case
                     )
@@ -66,7 +73,7 @@ class FunctionTest(BaseTest):
             print(f"Test with args {test_case} failed!\n{e}\n")
         return False
 
-    def test(self, test_cases):
+    def test(self, test_cases, seeding: Optional[List[Callable]] = None):
         n_passed = 0
         n_total = len(test_cases)
 
@@ -80,7 +87,7 @@ class FunctionTest(BaseTest):
             print(f"{self.fun_name} does not have a return statement!")
         else:
             for test_case in test_cases:
-                if self.run_single_test_case(test_case):
+                if self.run_single_test_case(test_case, seeding=seeding):
                     n_passed += 1
 
         print(self.double_line)
